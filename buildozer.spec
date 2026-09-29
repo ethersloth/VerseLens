@@ -7,6 +7,7 @@ source.include_exts = py,png,jpg,kv,atlas,qml,js,db
 source.exclude_dirs = VerseLens.AppDir, tools, deployment, bin, .venv, .buildozer, __pycache__
 source.exclude_patterns = VerseLens.png, *.AppImage, *.apk
 version = 0.1.0
+android.release_artifact = apk
 requirements = python3==3.11.16,hostpython3==3.11.16,shiboken6,PySide6
 orientation = portrait
 osx.python_version = 3
