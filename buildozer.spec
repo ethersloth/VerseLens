@@ -13,6 +13,7 @@ orientation = portrait
 osx.python_version = 3
 osx.kivy_version = 1.9.1
 fullscreen = 0
+android.api = 35
 android.archs = arm64-v8a
 android.allow_backup = True
 ios.kivy_ios_url = https://github.com/kivy/kivy-ios
@@ -25,7 +26,7 @@ android.sdk_path = /home/gwhitlock/.pyside6_android_deploy/android-sdk
 p4a.bootstrap = qt
 p4a.local_recipes = /home/gwhitlock/Desktop/workspace/VerseLens/deployment/recipes
 p4a.branch = develop
-android.permissions = android.permission.INTERNET, android.permission.WRITE_EXTERNAL_STORAGE
+android.permissions = android.permission.INTERNET
 android.add_jars = /home/gwhitlock/Desktop/workspace/VerseLens/deployment/jar/PySide6/jar/Qt6Android.jar,/home/gwhitlock/Desktop/workspace/VerseLens/deployment/jar/PySide6/jar/Qt6AndroidBindings.jar
 p4a.extra_args = --qt-libs=Widgets,Gui,Core --load-local-libs=plugins_platforms_qtforandroid --init-classes=
 icon.filename = /home/gwhitlock/Desktop/workspace/VerseLens/assets/verselens_icon.png

@@ -780,6 +780,21 @@ class MainWindow(QMainWindow):
         else:
             self.close()
 
+    def showEvent(self, e):
+        super().showEvent(e)
+        win = self.windowHandle()
+        if win and not getattr(self, "_safe_area_hooked", False):
+            # Android 15+ draws apps edge-to-edge; keep content clear of the system bars.
+            win.safeAreaMarginsChanged.connect(self._apply_safe_area)
+            self._safe_area_hooked = True
+        self._apply_safe_area()
+
+    def _apply_safe_area(self, *_):
+        win = self.windowHandle()
+        if win:
+            m = win.safeAreaMargins()
+            self.centralWidget().setContentsMargins(m.left(), m.top(), m.right(), m.bottom())
+
     def resizeEvent(self, e):
         super().resizeEvent(e)
         if self.sheet.isVisible():
