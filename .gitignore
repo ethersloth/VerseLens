@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Build tooling and outputs
+.buildozer/
+bin/
+deployment/
+VerseLens.AppDir/
+*.dist/
+*.build/
+*.bin
+*.apk
+*.aab
+*.AppImage
+
+# Scripture database (over GitHub's 100 MB file limit; published as a release asset)
+data/bible.db
+
+# Signing material must never be committed
+*.keystore
+*.jks
+keystore.properties
+
+# Local backups
+*.bak
+
+# Local notes and duplicate artwork
+APP_ID_SUGGESTIONS.txt
+/VerseLens.png
