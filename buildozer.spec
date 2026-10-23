@@ -4,9 +4,9 @@ package.name = app
 package.domain = com.verselens
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas,qml,js,db
-source.exclude_dirs = VerseLens.AppDir, tools, deployment, bin, .venv, .buildozer, __pycache__
+source.exclude_dirs = VerseLens.AppDir, tools, tests, deployment, bin, .venv, .buildozer, __pycache__
 source.exclude_patterns = VerseLens.png, *.AppImage, *.apk
-version = 0.1.0
+version = 0.1.1
 android.release_artifact = apk
 requirements = python3==3.11.16,hostpython3==3.11.16,shiboken6,PySide6
 orientation = portrait
@@ -35,4 +35,3 @@ icon.filename = /home/gwhitlock/Desktop/workspace/VerseLens/assets/verselens_ico
 log_level = 2
 warn_on_root = 1
 bin_dir = /home/gwhitlock/Desktop/workspace/VerseLens
-
