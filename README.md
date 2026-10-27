@@ -43,7 +43,7 @@ Download from the [latest release](../../releases/latest):
 
 ## Run from source
 
-The scripture database is too large for the repository (GitHub limits files to 100 MB), so it is published with each release.
+The scripture database is too large for the repository (GitHub limits files to 100 MB), so it is published as a release download. It is unchanged since v0.1.0; the copy attached to [v0.1.1](../../releases/tag/v0.1.1) is current.
 
 ```bash
 git clone https://github.com/ethersloth/VerseLens.git
@@ -51,9 +51,9 @@ cd VerseLens
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-# download bible.db from the latest release into data/
+# download bible.db from the v0.1.1 release into data/
 mkdir -p data
-gh release download --pattern bible.db --dir data   # or download it from the Releases page
+gh release download v0.1.1 --pattern bible.db --dir data   # or download it from the Releases page
 python main.py
 ```
 
