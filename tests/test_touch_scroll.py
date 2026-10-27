@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import patch
 
-from PySide6.QtCore import QPoint, QPointF, Qt
+from PySide6.QtCore import QEvent, QPoint, QPointF, Qt
+from PySide6.QtGui import QMouseEvent
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication, QListWidget, QScroller, QTextBrowser, QTextEdit
 
@@ -88,6 +89,48 @@ class TouchScrollTests(unittest.TestCase):
                     widget.addItem("Genesis")
                     widget.setCurrentRow(0)
                     self.assertTrue(widget.item(0).isSelected())
+
+    def make_book_list(self, platform):
+        books = QListWidget()
+        self.addCleanup(books.close)
+        books.setVerticalScrollMode(QListWidget.ScrollPerPixel)
+        with patch("app.QGuiApplication.platformName", return_value=platform):
+            enable_touch_scroll(books)
+        books.addItems([f"Book {n}" for n in range(1, 67)])
+        books.resize(300, 300)
+        books.show()
+        self.application.processEvents()
+        clicked = []
+        books.itemClicked.connect(lambda item: clicked.append(item.text()))
+        return books, clicked
+
+    def test_android_list_drag_scrolls_without_selecting_a_book(self):
+        books, clicked = self.make_book_list("android")
+        viewport = books.viewport()
+        self.addCleanup(QScroller.scroller(viewport).stop)
+
+        def send(kind, y, button, buttons):
+            # QTest.mouseMove does not hold the button, so build the drag by hand.
+            point = QPointF(100, y)
+            event = QMouseEvent(kind, point, viewport.mapToGlobal(point), button, buttons, Qt.NoModifier)
+            QApplication.sendEvent(viewport, event)
+            QTest.qWait(15)
+
+        send(QEvent.MouseButtonPress, 250, Qt.LeftButton, Qt.LeftButton)
+        for y in range(240, 40, -20):
+            send(QEvent.MouseMove, y, Qt.NoButton, Qt.LeftButton)
+        send(QEvent.MouseButtonRelease, 40, Qt.LeftButton, Qt.NoButton)
+        QTest.qWait(400)
+        self.assertGreater(books.verticalScrollBar().value(), 0)
+        self.assertEqual(clicked, [])
+        self.assertEqual(books.selectedItems(), [])
+
+    def test_android_list_tap_still_selects_a_book(self):
+        books, clicked = self.make_book_list("android")
+        point = books.visualItemRect(books.item(2)).center()
+        QTest.mouseClick(books.viewport(), Qt.LeftButton, pos=point)
+        QTest.qWait(400)
+        self.assertEqual(clicked, ["Book 3"])
 
 
 if __name__ == "__main__":

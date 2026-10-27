@@ -20,7 +20,7 @@ from PySide6.QtWidgets import (
 from bible_app import db
 
 APP_NAME = "VerseLens"
-APP_VERSION = "0.1.1"  # keep in sync with buildozer.spec
+APP_VERSION = "0.1.2"  # keep in sync with buildozer.spec
 APP_SUBTITLE = "Scripture Study, Notes & Strong’s"
 ORG_NAME = "Gregory Whitlock"
 
@@ -190,8 +190,15 @@ def draw_icon(name, color, size=24, filled=False):
 
 def enable_touch_scroll(area):
     # Kinetic finger scrolling; mouse and wheel input behave as before.
-    QScroller.grabGesture(area.viewport(), QScroller.TouchGesture)
-    if isinstance(area, QTextBrowser) and QGuiApplication.platformName() == "android":
+    gesture = QScroller.TouchGesture
+    android = QGuiApplication.platformName() == "android"
+    if android and not isinstance(area, QTextEdit):
+        # Android turns finger touches into mouse presses, which lists and buttons act
+        # on before a touch scroller sees the drag. A mouse gesture holds the press
+        # back until it is clear the finger is tapping rather than scrolling.
+        gesture = QScroller.LeftMouseButtonGesture
+    QScroller.grabGesture(area.viewport(), gesture)
+    if isinstance(area, QTextBrowser) and android:
         # Android can synthesize mouse drags from touch input.
         area.setTextInteractionFlags(
             area.textInteractionFlags()
