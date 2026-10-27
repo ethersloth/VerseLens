@@ -12,7 +12,7 @@
 - Strong’s-tagged editions (KJV-S, ASV-S) with tappable Strong’s numbers and an occurrence list
 - Full-text search of the current translation
 - Phone-first layout with light and dark themes (follows the system setting by default)
-- Android reading views use finger scrolling without text selection; links remain tappable and notes remain editable. Lists and grids scroll under a dragging finger and only open what you tap. Desktop text selection is unchanged.
+- Android reading views use finger scrolling without text selection; links remain tappable and notes remain editable. On touchscreens (Android and Windows tablets), lists and grids scroll under a dragging finger and only open what you tap. Desktop text selection is unchanged.
 - Everything works offline; your notes stay on your device
 
 ## Included translations

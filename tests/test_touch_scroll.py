@@ -1,8 +1,8 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from PySide6.QtCore import QEvent, QPoint, QPointF, Qt
-from PySide6.QtGui import QMouseEvent
+from PySide6.QtGui import QInputDevice, QMouseEvent
 from PySide6.QtTest import QTest
 from PySide6.QtWidgets import QApplication, QListWidget, QScroller, QTextBrowser, QTextEdit
 
@@ -90,11 +90,12 @@ class TouchScrollTests(unittest.TestCase):
                     widget.setCurrentRow(0)
                     self.assertTrue(widget.item(0).isSelected())
 
-    def make_book_list(self, platform):
+    def make_book_list(self, platform, touchscreen=False):
         books = QListWidget()
         self.addCleanup(books.close)
         books.setVerticalScrollMode(QListWidget.ScrollPerPixel)
-        with patch("app.QGuiApplication.platformName", return_value=platform):
+        devices = [Mock(**{"type.return_value": QInputDevice.DeviceType.TouchScreen})] if touchscreen else []
+        with patch("app.QGuiApplication.platformName", return_value=platform),                 patch("app.QInputDevice.devices", return_value=devices):
             enable_touch_scroll(books)
         books.addItems([f"Book {n}" for n in range(1, 67)])
         books.resize(300, 300)
@@ -104,8 +105,12 @@ class TouchScrollTests(unittest.TestCase):
         books.itemClicked.connect(lambda item: clicked.append(item.text()))
         return books, clicked
 
-    def test_android_list_drag_scrolls_without_selecting_a_book(self):
-        books, clicked = self.make_book_list("android")
+    def test_touch_list_drag_scrolls_without_selecting_a_book(self):
+        for platform, touchscreen in (("android", False), ("windows", True)):
+            with self.subTest(platform=platform):
+                self.check_drag_scrolls_without_selecting(*self.make_book_list(platform, touchscreen))
+
+    def check_drag_scrolls_without_selecting(self, books, clicked):
         viewport = books.viewport()
         self.addCleanup(QScroller.scroller(viewport).stop)
 
@@ -125,8 +130,8 @@ class TouchScrollTests(unittest.TestCase):
         self.assertEqual(clicked, [])
         self.assertEqual(books.selectedItems(), [])
 
-    def test_android_list_tap_still_selects_a_book(self):
-        books, clicked = self.make_book_list("android")
+    def test_touch_list_tap_still_selects_a_book(self):
+        books, clicked = self.make_book_list("windows", touchscreen=True)
         point = books.visualItemRect(books.item(2)).center()
         QTest.mouseClick(books.viewport(), Qt.LeftButton, pos=point)
         QTest.qWait(400)

@@ -8,7 +8,7 @@ from string import Template
 
 from PySide6.QtCore import QPointF, QRectF, QSize, Qt, QTimer, Signal
 from PySide6.QtGui import (
-    QColor, QGuiApplication, QIcon, QKeySequence, QPainter, QPainterPath, QPalette, QPen,
+    QColor, QGuiApplication, QIcon, QInputDevice, QKeySequence, QPainter, QPainterPath, QPalette, QPen,
     QPixmap, QPolygonF, QShortcut
 )
 from PySide6.QtWidgets import (
@@ -188,14 +188,19 @@ def draw_icon(name, color, size=24, filled=False):
     p.end()
     return pm
 
+def has_touchscreen():
+    return QGuiApplication.platformName() == "android" or any(
+        d.type() == QInputDevice.DeviceType.TouchScreen for d in QInputDevice.devices()
+    )
+
 def enable_touch_scroll(area):
     # Kinetic finger scrolling; mouse and wheel input behave as before.
     gesture = QScroller.TouchGesture
     android = QGuiApplication.platformName() == "android"
-    if android and not isinstance(area, QTextEdit):
-        # Android turns finger touches into mouse presses, which lists and buttons act
-        # on before a touch scroller sees the drag. A mouse gesture holds the press
-        # back until it is clear the finger is tapping rather than scrolling.
+    if not isinstance(area, QTextEdit) and has_touchscreen():
+        # Touchscreens (Android, Windows tablets) turn finger touches into mouse presses,
+        # which lists and buttons act on before a touch scroller sees the drag. A mouse
+        # gesture holds the press back until it is clear the finger is tapping.
         gesture = QScroller.LeftMouseButtonGesture
     QScroller.grabGesture(area.viewport(), gesture)
     if isinstance(area, QTextBrowser) and android:
