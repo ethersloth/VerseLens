@@ -112,7 +112,6 @@ class TouchScrollTests(unittest.TestCase):
 
     def check_drag_scrolls_without_selecting(self, books, clicked):
         viewport = books.viewport()
-        self.addCleanup(QScroller.scroller(viewport).stop)
 
         def send(kind, y, button, buttons):
             # QTest.mouseMove does not hold the button, so build the drag by hand.
@@ -129,6 +128,8 @@ class TouchScrollTests(unittest.TestCase):
         self.assertGreater(books.verticalScrollBar().value(), 0)
         self.assertEqual(clicked, [])
         self.assertEqual(books.selectedItems(), [])
+        # A fling still running would swallow the next list's drag.
+        QScroller.scroller(viewport).stop()
 
     def test_touch_list_tap_still_selects_a_book(self):
         books, clicked = self.make_book_list("windows", touchscreen=True)
